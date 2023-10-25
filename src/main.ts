@@ -29,18 +29,6 @@ const tileSize = gridCanvas.width / numTiles;
 const numSelectables = imageUrls.length;
 const selectHeight = selectCanvas.height / numSelectables;
 
-//creating the tilemap nested array
-// let tilemap: HTMLImageElement[][] = new Array(numTiles);
-
-// for(let i = 0; i < numTiles; i++) {
-//     let row = new Array(numTiles);
-//     for (let j = 0; j < numTiles; j++) {
-//         row[j] = new Image();
-//         row[j].src = "/tile1.png";
-//     }
-//     tilemap[i] = row;
-// }
-
 //track the selected tile
 let currentTile = "/tile1.png";
 
@@ -53,15 +41,17 @@ function drawTexture(
   row: number,
   col: number,
   ctx: CanvasRenderingContext2D,
-  image: HTMLImageElement,
+  tile: string,
   width: number,
   height: number,
   cellSize: number
 ) {
-  image.onload = () => {
-    ctx.drawImage(image, row * cellSize, col * cellSize, width, height);
+  let img = new Image();
+  img.src = tile;
+  img.onload = () => {
+    ctx.drawImage(img, row * cellSize, col * cellSize, width, height);
   };
-  ctx.drawImage(image, row * cellSize, col * cellSize, width, height);
+  ctx.drawImage(img, row * cellSize, col * cellSize, width, height);
 }
 
 // ----- Interacting with the main tilemap -----
@@ -70,13 +60,11 @@ function initializeTilemap() {
   gridCtx.clearRect(0, 0, gridCanvas.width, gridCanvas.height);
   for (let i = 0; i < numTiles; i++) {
     for (let j = 0; j < numTiles; j++) {
-      let img = new Image();
-      img.src = "/tile1.png";
       drawTexture(
         i,
         j,
         gridCtx,
-        img,
+        currentTile,
         gridCanvas.width / numTiles,
         gridCanvas.height / numTiles,
         tileSize
@@ -89,14 +77,11 @@ gridCanvas.addEventListener("click", (e) => {
   const coordX = Math.trunc(e.offsetX / tileSize);
   const coordY = Math.trunc(e.offsetY / tileSize);
 
-  let img = new Image();
-  img.src = currentTile;
-
   drawTexture(
     coordX,
     coordY,
     gridCtx,
-    img,
+    currentTile,
     gridCanvas.width / numTiles,
     gridCanvas.height / numTiles,
     tileSize
@@ -108,13 +93,11 @@ gridCanvas.addEventListener("click", (e) => {
 // Loop through the selectable tiles and draw textures in each cell
 function drawSelectCanvas() {
   for (let i = 0; i < numSelectables; i++) {
-    const selectableImage = new Image();
-    selectableImage.src = imageUrls[i];
     drawTexture(
       0,
       i,
       selectCtx,
-      selectableImage,
+      imageUrls[i],
       selectCanvas.width,
       selectHeight,
       64
